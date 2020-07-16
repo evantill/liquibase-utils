@@ -2,7 +2,7 @@ plugins {
     `java-library`
     `maven-publish`
     signing
-    id ("net.researchgate.release") version "2.8.1"
+    id("net.researchgate.release") version "2.8.1"
 }
 
 group = "com.github.evantill"
@@ -17,7 +17,7 @@ val ossrhSnapshotUrl: String by project
 val ossrhUsername: String by project
 val ossrhPassword: String by project
 
-val travis = System.getenv("CI")?.toBoolean()?:false
+val travis = System.getenv("CI")?.toBoolean() ?: false
 
 repositories {
     jcenter()
@@ -35,12 +35,6 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
     withSourcesJar()
     withJavadocJar()
-}
-
-tasks.jar {
-    manifest {
-        attributes("Liquibase-Package" to liquibasePackages.joinToString())
-    }
 }
 
 publishing {
@@ -96,4 +90,19 @@ signing {
         )
     }
     sign(publishing.publications["maven"])
+}
+
+tasks {
+
+    //declare liquibase extensios n packages
+    jar {
+        manifest {
+            attributes("Liquibase-Package" to liquibasePackages.joinToString())
+        }
+    }
+
+    // publishs artefacts when releasing
+    afterReleaseBuild {
+        dependsOn(publish)
+    }
 }
