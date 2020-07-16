@@ -2,6 +2,7 @@ plugins {
     `java-library`
     `maven-publish`
     signing
+    id ("net.researchgate.release") version "2.8.1"
 }
 
 group = "com.github.evantill"
