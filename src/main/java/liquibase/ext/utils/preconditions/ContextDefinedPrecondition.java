@@ -1,4 +1,4 @@
-package liquibase.precondition.ext.utils;
+package liquibase.ext.utils.preconditions;
 
 import liquibase.Contexts;
 import liquibase.changelog.ChangeSet;
@@ -10,6 +10,7 @@ import liquibase.exception.PreconditionFailedException;
 import liquibase.exception.ValidationErrors;
 import liquibase.exception.Warnings;
 import liquibase.precondition.AbstractPrecondition;
+import liquibase.ext.utils.xml.XmlConstants;
 
 /**
  * Precondition to check that a context was specified when calling liquibase.
@@ -18,7 +19,7 @@ public class ContextDefinedPrecondition extends AbstractPrecondition {
 
   @Override
   public String getSerializedObjectNamespace() {
-    return GENERIC_CHANGELOG_EXTENSION_NAMESPACE;
+    return XmlConstants.UTILS_CHANGELOG_NAMESPACE;
   }
 
   @Override

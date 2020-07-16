@@ -4,10 +4,19 @@ plugins {
     signing
 }
 
-group="com.github.evantill"
-version= "0.0.1-SNAPSHOT"
+group = "com.github.evantill"
+description = "plugin for liquibase extensions"
 
-description="plugin for liquibase extensions"
+val liquibasePackages = listOf(
+        "liquibase.ext.utils.preconditions"
+)
+
+val ossrhReleaseUrl: String by project
+val ossrhSnapshotUrl: String by project
+val ossrhUsername: String by project
+val ossrhPassword: String by project
+
+val travis = System.getenv("CI")?.toBoolean()?:false
 
 repositories {
     jcenter()
@@ -27,22 +36,23 @@ java {
     withJavadocJar()
 }
 
-val ossrhReleaseUrl: String by project
-val ossrhSnapshotUrl: String by project
-val ossrhUsername: String by project
-val ossrhPassword: String by project
+tasks.jar {
+    manifest {
+        attributes("Liquibase-Package" to liquibasePackages.joinToString())
+    }
+}
 
 publishing {
     publications {
-        repositories{
-            maven{
-                name="nexus"
+        repositories {
+            maven {
+                name = "nexus"
                 val releasesRepoUrl = ossrhReleaseUrl
                 val snapshotsRepoUrl = ossrhSnapshotUrl
-                url=uri(if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl)
-                credentials{
-                    username=ossrhUsername
-                    password=ossrhPassword
+                url = uri(if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl)
+                credentials {
+                    username = ossrhUsername
+                    password = ossrhPassword
                 }
             }
         }
@@ -78,5 +88,11 @@ publishing {
 }
 
 signing {
+    if (travis) {
+        useInMemoryPgpKeys(
+                project.property("signingKey").toString(),
+                project.property("signingPassword").toString()
+        )
+    }
     sign(publishing.publications["maven"])
 }

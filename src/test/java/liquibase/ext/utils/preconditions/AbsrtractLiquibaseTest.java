@@ -1,4 +1,4 @@
-package liquibase.precondition.ext.utils;
+package liquibase.ext.utils.preconditions;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

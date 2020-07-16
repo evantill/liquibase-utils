@@ -1,4 +1,4 @@
-package liquibase.precondition.ext.utils;
+package liquibase.ext.utils.preconditions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
