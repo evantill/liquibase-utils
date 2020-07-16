@@ -27,7 +27,7 @@ For XML change logs, define the <code>utils</code> namespace as below:
    xsi:schemaLocation= "http://www.liquibase.org/xml/ns/dbchangelog
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd 
                         http://www.liquibase.org/xml/ns/dbchangelog-ext/liquibase-utils 
-                        http://evantill.github.com/liquibase-utils/liquibase-utils.xsd">
+                        https://evantill.github.io/liquibase-utils/liquibase-utils.xsd">
 </databaseChangeLog>
 ```
 
@@ -40,4 +40,4 @@ namespace prefix on those elements.  Here is a quick example of how to require a
    </preConditions>
 ```
 
-Refer to the [documentation](http://evantill.github.com/liquibase-utils) for further information.
+Refer to the [documentation](https://evantill.github.io/liquibase-utils/) for further information.
