@@ -33,7 +33,28 @@ public class AbsrtractLiquibaseTest {
   protected ResourceAccessor resourceAccessor() {
     return new ClassLoaderResourceAccessor();
   }
-  
+
+  protected String changeLogForTestClass(){
+    return changeLogForTestClass(getClass());
+  }
+
+  protected String changeLogForTestClass(Class<?> testClass){
+    return testResourceLocation(testClass,"-changelog.xml");
+  }
+
+  protected String changeLogForTestMethod(String methodName){
+    return testResourceLocation(getClass(),methodName);
+  }
+
+  protected String changeLogForTestMethod(Class<?> testClass,String methodName){
+    return testResourceLocation(testClass,"-"+methodName+"-changelog.xml");
+  }
+
+  private String testResourceLocation(Class<?> testClass,String suffix){
+    String resourceLocation= testClass.getCanonicalName().replace('.','/')+suffix;
+    return resourceLocation;
+  }
+
   public static final String JDBCDRIVER = "org.hsqldb.jdbc.JDBCDriver";
   public static final String URL = "jdbc:hsqldb:mem:myDb";
   public static final String USER = "sa";

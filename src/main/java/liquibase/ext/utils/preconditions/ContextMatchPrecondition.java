@@ -1,5 +1,7 @@
 package liquibase.ext.utils.preconditions;
 
+import static liquibase.ext.utils.preconditions.ContextDefinedPrecondition.contextDefined;
+
 import liquibase.ContextExpression;
 import liquibase.Contexts;
 import liquibase.changelog.ChangeSet;
@@ -10,13 +12,28 @@ import liquibase.exception.PreconditionErrorException;
 import liquibase.exception.PreconditionFailedException;
 import liquibase.exception.ValidationErrors;
 import liquibase.exception.Warnings;
-import liquibase.precondition.AbstractPrecondition;
 import liquibase.ext.utils.xml.XmlConstants;
+import liquibase.precondition.AbstractPrecondition;
 
 /**
- * Precondition to check that a context was specified when calling liquibase.
+ * Precondition to check that a context match the specified expression
  */
-public class ContextDefinedPrecondition extends AbstractPrecondition {
+public class ContextMatchPrecondition extends AbstractPrecondition {
+
+  private ContextExpression expression = new ContextExpression();
+
+  /**
+   * Expression to check
+   * Example of expression : <code>(a and b) or !c</code>
+   * @see ContextExpression
+   */
+  public String getExpression() {
+    return expression.toString();
+  }
+
+  public void setExpression(String expression) {
+    this.expression = new ContextExpression(expression);
+  }
 
   @Override
   public String getSerializedObjectNamespace() {
@@ -25,7 +42,7 @@ public class ContextDefinedPrecondition extends AbstractPrecondition {
 
   @Override
   public String getName() {
-    return "contextDefined";
+    return "contextMatch";
   }
 
   @Override
@@ -43,12 +60,13 @@ public class ContextDefinedPrecondition extends AbstractPrecondition {
       ChangeExecListener changeExecListener)
       throws PreconditionFailedException, PreconditionErrorException {
     Contexts contexts = changeLog.getChangeLogParameters().getContexts();
-    if (!contextDefined(contexts)) {
-      throw new PreconditionFailedException("No contexts were set", changeLog, this);
+    if (!matchExpression(contexts,expression)) {
+      throw new PreconditionFailedException(
+          " contexts " + contexts + " does not match  " + expression, changeLog, this);
     }
   }
 
-  static boolean contextDefined(Contexts ctx){
-    return ctx != null && !ctx.isEmpty();
+  static boolean matchExpression(Contexts ctx,ContextExpression e){
+    return contextDefined(ctx) && e.matches(ctx);
   }
 }

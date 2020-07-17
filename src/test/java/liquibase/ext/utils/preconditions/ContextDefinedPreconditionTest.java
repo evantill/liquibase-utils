@@ -13,7 +13,8 @@ public class ContextDefinedPreconditionTest extends AbsrtractLiquibaseTest {
   @Test
   public void testCallWithoutContext() {
     try {
-      Liquibase l = new Liquibase("changelog-with-condition.xml", resourceAccessor(), database());
+
+      Liquibase l = new Liquibase(changeLogForTestClass(), resourceAccessor(), database());
       l.validate();
       fail("precondition should have failed");
     } catch (LiquibaseException e) {
@@ -24,7 +25,7 @@ public class ContextDefinedPreconditionTest extends AbsrtractLiquibaseTest {
 
   @Test
   public void testCallWithContext() throws LiquibaseException {
-    Liquibase l = new Liquibase("changelog-with-condition.xml", resourceAccessor(), database());
+    Liquibase l = new Liquibase(changeLogForTestClass(), resourceAccessor(), database());
     l.update("dev");
   }
 

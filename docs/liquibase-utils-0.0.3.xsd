@@ -6,10 +6,4 @@
 
   <xsd:element name="contextDefined"/>
 
-  <xsd:element name="contextMatch">
-    <xsd:complexType>
-      <xsd:attribute name="expression" type="xsd:string" use="required"/>
-    </xsd:complexType>
-  </xsd:element>
-
 </xsd:schema>
