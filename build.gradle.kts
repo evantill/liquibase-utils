@@ -50,13 +50,19 @@ publishing {
                     password = ossrhPassword
                 }
             }
+            maven{
+                name="local"
+                url=uri("$buildDir/publishing-repository")
+            }
         }
 
-        create<MavenPublication>("maven") {
+        create<MavenPublication>("library") {
+            from(components["java"])
             pom {
                 name.set(project.name)
                 description.set(project.description)
                 url.set("https://github.com/evantill/${project.name}")
+                packaging="jar"
                 licenses {
                     license {
                         name.set("The Apache License, Version 2.0")
@@ -76,7 +82,6 @@ publishing {
                     url.set("http://github.com/evantill/${project.name}/tree/master")
                 }
             }
-            from(components["java"])
         }
     }
 
@@ -89,12 +94,12 @@ signing {
                 project.property("signingPassword").toString()
         )
     }
-    sign(publishing.publications["maven"])
+    sign(publishing.publications["library"])
 }
 
 tasks {
 
-    //declare liquibase extensios n packages
+    //declare liquibase extensions packages
     jar {
         manifest {
             attributes("Liquibase-Package" to liquibasePackages.joinToString())
