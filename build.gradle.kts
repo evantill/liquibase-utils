@@ -128,9 +128,10 @@ tasks {
     }
 
     // publish artefacts when releasing
-    afterReleaseBuild {
+    // disabled as we use travis trigger to publish on tag
+    /*afterReleaseBuild {
         dependsOn(publish)
-    }
+    }*/
 
     // report is always generated after tests run
     test {
