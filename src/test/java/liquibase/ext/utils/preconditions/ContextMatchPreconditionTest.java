@@ -17,7 +17,8 @@ public class ContextMatchPreconditionTest extends AbsrtractLiquibaseTest {
       l.validate();
       fail("precondition should have failed");
     } catch (LiquibaseException e) {
-      assertThat(e).isInstanceOf(ValidationFailedException.class).hasMessageContaining("contexts  does not match  (a and b) or !c");
+      String expectedMessage = "contexts parameters '' does not match  '(a and b) or !c'";
+      assertThat(e).isInstanceOf(ValidationFailedException.class).hasMessageContaining(expectedMessage);
     }
   }
 
@@ -34,7 +35,8 @@ public class ContextMatchPreconditionTest extends AbsrtractLiquibaseTest {
       l.update("c");
       fail("precondition should have failed");
     } catch (LiquibaseException e) {
-      assertThat(e).isInstanceOf(ValidationFailedException.class).hasMessageContaining("contexts c does not match  (a and b) or !c");
+      String expectedMessage = "contexts parameters 'c' does not match  '(a and b) or !c'";
+      assertThat(e).isInstanceOf(ValidationFailedException.class).hasMessageContaining(expectedMessage);
     }
   }
 

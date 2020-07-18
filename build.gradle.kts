@@ -4,18 +4,9 @@ plugins {
     `java-library`
     `maven-publish`
     signing
-    id("net.researchgate.release")
     jacoco
-}
-
-buildscript {
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath("com.vdurmont:semver4j:3.1.0")
-    }
+    id("net.researchgate.release")
+    id("com.github.kt3k.coveralls") version "2.8.4"
 }
 
 group = "com.github.evantill"
@@ -30,14 +21,25 @@ val ossrhSnapshotUrl: String by project
 val ossrhUsername: String by project
 val ossrhPassword: String by project
 
+val liquibaseVersion:String by project
+
 val travis = System.getenv("CI")?.toBoolean() ?: false
+val useAutomaticVersion = booleanProperty("release.useAutomaticVersion")
 
 repositories {
     jcenter()
 }
 
+buildscript {
+    dependencies {
+        classpath("com.vdurmont:semver4j:3.1.0")
+    }
+}
+
 dependencies {
-    implementation("org.liquibase:liquibase-core:3.8.1")
+    compileOnly("org.liquibase:liquibase-core:$liquibaseVersion")
+    compileOnly("org.jetbrains:annotations:19.0.0")
+    testImplementation("org.liquibase:liquibase-core:$liquibaseVersion")
     testImplementation("junit:junit:4.13")
     testImplementation("org.assertj:assertj-core:3.16.1")
     testImplementation("org.hsqldb:hsqldb:2.3.4")
@@ -110,7 +112,7 @@ signing {
     sign(publishing.publications["library"])
 }
 
-val useAutomaticVersion = booleanProperty("release.useAutomaticVersion")
+
 
 if (travis || useAutomaticVersion) {
     val projectVer = Semver("${project.version}")
@@ -141,6 +143,10 @@ tasks {
     // tests are required to run before generating the report
     jacocoTestReport {
         dependsOn(test)
+        reports {
+            xml.isEnabled = true
+            html.isEnabled = true
+        }
     }
 
 }

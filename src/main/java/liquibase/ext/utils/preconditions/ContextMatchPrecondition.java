@@ -1,14 +1,10 @@
 package liquibase.ext.utils.preconditions;
 
-import static liquibase.ext.utils.preconditions.ContextDefinedPrecondition.contextDefined;
-
 import liquibase.ContextExpression;
-import liquibase.Contexts;
 import liquibase.changelog.ChangeSet;
 import liquibase.changelog.DatabaseChangeLog;
 import liquibase.changelog.visitor.ChangeExecListener;
 import liquibase.database.Database;
-import liquibase.exception.PreconditionErrorException;
 import liquibase.exception.PreconditionFailedException;
 import liquibase.exception.ValidationErrors;
 import liquibase.exception.Warnings;
@@ -18,22 +14,23 @@ import liquibase.precondition.AbstractPrecondition;
 /**
  * Precondition to check that a context match the specified expression
  */
-public class ContextMatchPrecondition extends AbstractPrecondition {
+public final class ContextMatchPrecondition extends AbstractPrecondition {
 
-  private ContextExpression expression = new ContextExpression();
+  private static final String EMPTY = "";
+  private String expression = EMPTY;
 
   /**
-   * Expression to check
-   * Example of expression : <code>(a and b) or !c</code>
-   * @see ContextExpression
+   * Expression to check Example of expression : <code>(a and b) or !c</code>
+   *
    * @return the context expression
+   * @see ContextExpression
    */
   public String getExpression() {
-    return expression.toString();
+    return expression;
   }
 
   public void setExpression(String expression) {
-    this.expression = new ContextExpression(expression);
+    this.expression = expression != null ? expression : EMPTY;
   }
 
   @Override
@@ -57,17 +54,13 @@ public class ContextMatchPrecondition extends AbstractPrecondition {
   }
 
   @Override
-  public void check(Database database, DatabaseChangeLog changeLog, ChangeSet changeSet,
-      ChangeExecListener changeExecListener)
-      throws PreconditionFailedException, PreconditionErrorException {
-    Contexts contexts = changeLog.getChangeLogParameters().getContexts();
-    if (!matchExpression(contexts,expression)) {
+  public void check(Database db, DatabaseChangeLog changeLog, ChangeSet s, ChangeExecListener l)
+      throws PreconditionFailedException {
+    ContextsParameters parameters = new ContextsParameters(changeLog);
+    if (!parameters.match(expression)) {
       throw new PreconditionFailedException(
-          " contexts " + contexts + " does not match  " + expression, changeLog, this);
+          String
+              .format(" contexts parameters '%s' does not match  '%s'", parameters.value(), expression), changeLog, this);
     }
-  }
-
-  static boolean matchExpression(Contexts ctx,ContextExpression e){
-    return contextDefined(ctx) && e.matches(ctx);
   }
 }
