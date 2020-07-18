@@ -1,8 +1,21 @@
+import com.vdurmont.semver4j.Semver
+
 plugins {
     `java-library`
     `maven-publish`
     signing
-    id("net.researchgate.release") version "2.8.1"
+    id("net.researchgate.release")
+    jacoco
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath("com.vdurmont:semver4j:3.1.0")
+    }
 }
 
 group = "com.github.evantill"
@@ -50,9 +63,9 @@ publishing {
                     password = ossrhPassword
                 }
             }
-            maven{
-                name="local"
-                url=uri("$buildDir/publishing-repository")
+            maven {
+                name = "local"
+                url = uri("$buildDir/publishing-repository")
             }
         }
 
@@ -62,7 +75,7 @@ publishing {
                 name.set(project.name)
                 description.set(project.description)
                 url.set("https://github.com/evantill/${project.name}")
-                packaging="jar"
+                packaging = "jar"
                 licenses {
                     license {
                         name.set("The Apache License, Version 2.0")
@@ -97,6 +110,14 @@ signing {
     sign(publishing.publications["library"])
 }
 
+val useAutomaticVersion = booleanProperty("release.useAutomaticVersion")
+
+if (travis || useAutomaticVersion) {
+    val projectVer = Semver("${project.version}")
+    project.ext["release.releaseVersion"] = projectVer.withClearedSuffixAndBuild().value
+    project.ext["release.newVersion"] = projectVer.nextMinor().withSuffix("SNAPSHOT").value
+}
+
 tasks {
 
     //declare liquibase extensions packages
@@ -106,8 +127,19 @@ tasks {
         }
     }
 
-    // publishs artefacts when releasing
+    // publish artefacts when releasing
     afterReleaseBuild {
         dependsOn(publish)
     }
+
+    // report is always generated after tests run
+    test {
+        finalizedBy(jacocoTestReport)
+    }
+
+    // tests are required to run before generating the report
+    jacocoTestReport {
+        dependsOn(test)
+    }
+
 }
