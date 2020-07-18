@@ -2,6 +2,7 @@ package liquibase.ext.utils.preconditions;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import liquibase.Liquibase;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
@@ -34,24 +35,36 @@ public class AbsrtractLiquibaseTest {
     return new ClassLoaderResourceAccessor();
   }
 
-  protected String changeLogForTestClass(){
+  protected Liquibase liquibaseForTesting(String changelogFile) {
+    return new Liquibase(changelogFile, resourceAccessor(), database());
+  }
+
+  protected String changeLogForTestClass() {
     return changeLogForTestClass(getClass());
   }
 
-  protected String changeLogForTestClass(Class<?> testClass){
-    return testResourceLocation(testClass,"-changelog.xml");
+  protected String sqlChangeLogForTestClass() {
+    return sqlChangeLogForTestClass(getClass());
   }
 
-  protected String changeLogForTestMethod(String methodName){
-    return testResourceLocation(getClass(),methodName);
+  private String sqlChangeLogForTestClass(Class<?> testClass) {
+    return testResourceLocation(testClass, "-changelog.sql");
   }
 
-  protected String changeLogForTestMethod(Class<?> testClass,String methodName){
-    return testResourceLocation(testClass,"-"+methodName+"-changelog.xml");
+  protected String changeLogForTestClass(Class<?> testClass) {
+    return testResourceLocation(testClass, "-changelog.xml");
   }
 
-  private String testResourceLocation(Class<?> testClass,String suffix){
-    String resourceLocation= testClass.getCanonicalName().replace('.','/')+suffix;
+  protected String changeLogForTestMethod(String methodName) {
+    return testResourceLocation(getClass(), methodName);
+  }
+
+  protected String changeLogForTestMethod(Class<?> testClass, String methodName) {
+    return testResourceLocation(testClass, "-" + methodName + "-changelog.xml");
+  }
+
+  private String testResourceLocation(Class<?> testClass, String suffix) {
+    String resourceLocation = testClass.getCanonicalName().replace('.', '/') + suffix;
     return resourceLocation;
   }
 

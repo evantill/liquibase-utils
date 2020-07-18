@@ -6,6 +6,9 @@ import static org.junit.Assert.fail;
 import liquibase.Liquibase;
 import liquibase.exception.LiquibaseException;
 import liquibase.exception.ValidationFailedException;
+import liquibase.precondition.core.PreconditionContainer;
+import liquibase.serializer.ChangeLogSerializer;
+import liquibase.serializer.core.xml.XMLChangeLogSerializer;
 import org.junit.Test;
 
 public class ContextDefinedPreconditionTest extends AbsrtractLiquibaseTest {
@@ -13,9 +16,7 @@ public class ContextDefinedPreconditionTest extends AbsrtractLiquibaseTest {
   @Test
   public void testCallWithoutContext() {
     try {
-
-      Liquibase l = new Liquibase(changeLogForTestClass(), resourceAccessor(), database());
-      l.validate();
+      liquibaseForTesting(changeLogForTestClass()).validate();
       fail("precondition should have failed");
     } catch (LiquibaseException e) {
       assertThat(e).isInstanceOf(ValidationFailedException.class)
@@ -25,8 +26,15 @@ public class ContextDefinedPreconditionTest extends AbsrtractLiquibaseTest {
 
   @Test
   public void testCallWithContext() throws LiquibaseException {
-    Liquibase l = new Liquibase(changeLogForTestClass(), resourceAccessor(), database());
-    l.update("dev");
+    liquibaseForTesting(changeLogForTestClass()).update("dev");
   }
 
+  @Test
+  public void testSerialisation() throws LiquibaseException {
+    ChangeLogSerializer serializer = new XMLChangeLogSerializer();
+    Liquibase l = liquibaseForTesting(changeLogForTestClass());
+    PreconditionContainer preconditions = l.getDatabaseChangeLog().getPreconditions();
+    String serialized = serializer.serialize(preconditions, true);
+    assertThat(serialized).contains("<ext:contextDefined/>");
+  }
 }
