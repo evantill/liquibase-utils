@@ -26,6 +26,7 @@ public class ContextMatchPrecondition extends AbstractPrecondition {
    * Expression to check
    * Example of expression : <code>(a and b) or !c</code>
    * @see ContextExpression
+   * @return the context expression
    */
   public String getExpression() {
     return expression.toString();
