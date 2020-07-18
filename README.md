@@ -1,6 +1,7 @@
 Liquibase Utils
 -----------------
-[![Build Status](https://travis-ci.com/evantill/liquibase-utils.svg?branch=master)](https://travis-ci.com/evantill/liquibase-utils)
+[![Build Status](https://travis-ci.org/evantill/liquibase-utils.svg?branch=master)](https://travis-ci.org/evantill/liquibase-utils)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.evantill/liquibase-utils)](https://search.maven.org/search?q=g:com.github.evantill%20a:liquibase-utils)
 
 Liquibase Utils is an extension to [Liquibase] to add common utilities like [preconditions][liquibase-doc-preconditions]
 
